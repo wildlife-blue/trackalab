@@ -1,0 +1,11 @@
+#!/bin/sh
+# pre-push
+set -e
+
+echo "Running pre-push hook"
+
+echo "Running tests"
+bazel test //...
+
+echo "Build all artifacts"
+bazel build //...
