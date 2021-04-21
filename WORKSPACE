@@ -49,7 +49,7 @@ protobuf_deps()
 # Used in modules: //:All.
 git_repository(
     name = "bazel_embedded",
-    commit = "89c05fa415218abd2e24fa7016cb7903317d606b",
+    commit = "b8e1b66067ac54e86784479e5cde57c2ed88d099",
     remote = "https://github.com/silvergasp/bazel-embedded.git",
 )
 
