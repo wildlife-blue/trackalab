@@ -1,3 +1,10 @@
 try-import user.bazelrc
+# Required for Bazel's toolchain resolution.
 build --incompatible_enable_cc_toolchain_resolution
+
+# Improves hermetic build by making the environment variables static.
 build --incompatible_strict_action_env
+
+# Required for code coverage support.
+coverage --experimental_generate_llvm_lcov
+coverage --combined_report=lcov
