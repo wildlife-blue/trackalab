@@ -11,6 +11,12 @@ load(
     "http_archive",
 )
 
+git_repository(
+    name = "platforms",
+    commit = "682394a1a13d5c655f7adc14956ba2ff7f569860",
+    remote = "https://github.com/silvergasp/platforms.git",
+)
+
 # Set up Starlark library
 # Required by: io_bazel_rules_go, com_google_protobuf.
 # Used in modules: None.
@@ -175,4 +181,64 @@ git_repository(
     commit = "a40563d6ea1ea5d6745762bc04eb3f07d14e3fb2",
     remote = "https://github.com/bazelbuild/rules_license.git",
     shallow_since = "1589311098 -0400",
+)
+
+# Setup conda python distribution
+# Required by: ecg.
+# Used in modules: None.
+http_archive(
+    name = "rules_conda",
+    sha256 = "8298379474beb05f815afc33a42eb1732f8ebdab3aa639569473eae75e6e072b",
+    url = "https://github.com/spietras/rules_conda/releases/download/0.0.5/rules_conda-0.0.5.zip",
+)
+
+load("@rules_conda//:defs.bzl", "conda_create", "load_conda", "register_toolchain")
+
+# Download and install conda.
+load_conda(
+    version = "4.8.4",  # optional, defaults to 4.8.4
+)
+
+# Create environment with python3.
+conda_create(
+    name = "py3_env",
+    timeout = 600,
+    clean = True,
+    environment = "@//third_party/conda:py3_environment.yml",
+    quiet = True,
+)
+
+# Register pythons from environment as toolchain.
+register_toolchain(
+    py3_env = "py3_env",
+)
+
+# Setup python rules.
+# Required by: tracka.
+# Used in modules: None.
+http_archive(
+    name = "rules_python",
+    sha256 = "778197e26c5fbeb07ac2a2c5ae405b30f6cb7ad1f5510ea6fdac03bded96cc6f",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/rules_python/releases/download/0.2.0/rules_python-0.2.0.tar.gz",
+        "https://github.com/bazelbuild/rules_python/releases/download/0.2.0/rules_python-0.2.0.tar.gz",
+    ],
+)
+
+# Setup absl.
+# Required by: gtest.
+# Used in modules: None.
+http_archive(
+    name = "com_google_absl",
+    strip_prefix = "abseil-cpp-98eb410c93ad059f9bba1bf43f5bb916fc92a5ea",
+    urls = ["https://github.com/abseil/abseil-cpp/archive/98eb410c93ad059f9bba1bf43f5bb916fc92a5ea.zip"],
+)
+
+# Setup gtest rules.
+# Required by: tracka.
+# Used in modules: config, spi, gpio, artic_r3.
+git_repository(
+    name = "gtest",
+    commit = "703bd9caab50b139428cea1aaff9974ebee5742e",
+    remote = "https://github.com/google/googletest.git",
 )
