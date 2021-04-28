@@ -8,3 +8,6 @@ build --incompatible_strict_action_env
 # Required for code coverage support.
 coverage --experimental_generate_llvm_lcov
 coverage --combined_report=lcov
+
+# Strict environment to enable remote builds
+build --incompatible_strict_action_env

@@ -1,5 +1,7 @@
 # Bazel
 bazel-*
+user.bazelrc
 
 # Node
 node_modules
+
