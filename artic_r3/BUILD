@@ -7,6 +7,23 @@ cc_library(
     strip_include_prefix = "public",
 )
 
+cc_library(
+    name = "standard_mode",
+    hdrs = ["public/internal/standard_mode.h"],
+    strip_include_prefix = "public",
+    deps = ["@pigweed//pw_span"],
+)
+
+cc_test(
+    name = "standard_mode_test",
+    srcs = ["standard_mode_test.cc"],
+    deps = [
+        ":standard_mode",
+        "@gtest//:gtest_main",
+        "@pigweed//pw_bytes",
+    ],
+)
+
 cc_test(
     name = "artic_r3_test",
     srcs = ["artic_r3_test.cc"],

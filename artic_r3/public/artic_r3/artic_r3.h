@@ -7,8 +7,7 @@
 #include "pw_status/status.h"
 #include "spi/spi.h"
 
-namespace tr {
-namespace artic {
+namespace tr::artic {
 
 namespace internal {
 template <class Func_t>
@@ -27,9 +26,14 @@ bool poll_true_for(
 
 class ArticR3 {
  public:
-  constexpr ArticR3(gpio::GpoInterface &reset, gpio::GpoInterface &device_select, gpio::GpiInterface &int1,
+  constexpr ArticR3(gpio::GpoInterface &reset,
+                    gpio::GpoInterface &device_select, gpio::GpiInterface &int1,
                     gpio::GpiInterface &int2, spi::SpiInterface &spi)
-      : reset_(reset), device_select_(device_select),int1_(int1), int2_(int2), spi_(spi) {}
+      : reset_(reset),
+        device_select_(device_select),
+        int1_(int1),
+        int2_(int2),
+        spi_(spi) {}
 
   void Reset() {
     // Reset line is active low. This resets and releases.
@@ -38,7 +42,7 @@ class ArticR3 {
 
     using namespace std::chrono_literals;
     // ARTIC R3 Datasheet - sec: 3.1
-    const auto startup_time  = 40ms;
+    const auto startup_time = 40ms;
     PW_CHECK_OK(PollIdleStateTransitionFor(startup_time));
   }
 
@@ -51,11 +55,11 @@ class ArticR3 {
 
   pw::Status PollIdleStateTransitionFor(
       std::chrono::duration<long double, std::milli> duration) {
-    if (internal::poll_true_for([this]() { return int1_.IsHigh(); }, duration)) {
+    if (internal::poll_true_for([this]() { return int1_.IsHigh(); },
+                                duration)) {
       return pw::OkStatus();
     }
     return pw::Status::DeadlineExceeded();
   }
 };
-}  // namespace artic
-}  // namespace tr
+}  // namespace tr::artic

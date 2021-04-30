@@ -5,8 +5,7 @@
 #include "gtest/gtest.h"
 #include "spi/spi.h"
 
-namespace tr {
-namespace artic {
+namespace tr::artic {
 
 class MockGpi : public gpio::GpiInterface {
  public:
@@ -37,5 +36,4 @@ TEST(ArticR3, Reset) {
 
 TEST(ArticR3, todo) {}
 
-}  // namespace artic
-}  // namespace tr
+}
