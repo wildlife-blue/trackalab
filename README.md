@@ -67,3 +67,20 @@ be successful developing from WSL.
 - Libncurses (Linux/WSL only): `sudo apt install libncurses5`
 
 All other dependencies will be pulled down by the Bazel build system.
+
+## System overview
+
+The first iteration of the wildlife tracking tag integrates two sensors;
+
+- A 9-axis inertial measurement unit (IMU),
+- A pressure and temperature sensor with a 2mm depth resolution capable of
+  measurement up to 300m and survivability up to 500m.
+
+The logic is all tied together with an ultra-low power ARM Cortex-M4. Location
+determination is handled by the Artic-R3 ASIC radio developed to communicate on
+the satellite Argos network. The Argos network offers both localization and
+data transfer.
+
+An overview of this is shown below.
+
+![system_overview](docs/assets/schematic.drawio.svg)
