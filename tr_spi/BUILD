@@ -3,7 +3,11 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "spi",
-    srcs = ["public/spi/spi.h"],
+    name = "tr_spi",
+    srcs = ["public/tr_spi/spi.h"],
     includes = ["public"],
+    deps = [
+        "@pigweed//pw_span",
+        "@pigweed//pw_status",
+    ],
 )

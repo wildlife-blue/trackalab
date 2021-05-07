@@ -1,11 +1,11 @@
 #pragma once
 #include <chrono>
 
-#include "gpio/gpio.h"
 #include "pw_assert/check.h"
 #include "pw_chrono/system_clock.h"
 #include "pw_status/status.h"
-#include "spi/spi.h"
+#include "tr_gpio/gpio.h"
+#include "tr_spi/spi.h"
 
 namespace tr::artic {
 
@@ -31,8 +31,8 @@ class ArticR3 {
                     gpio::GpiInterface &int2, spi::SpiInterface &spi)
       : reset_(reset),
         device_select_(device_select),
-        int1_(int1),
-        int2_(int2),
+        interupt1_(int1),
+        interupt2_(int2),
         spi_(spi) {}
 
   void Reset() {
@@ -49,13 +49,13 @@ class ArticR3 {
  private:
   gpio::GpoInterface &reset_;
   gpio::GpoInterface &device_select_;
-  gpio::GpiInterface &int1_;
-  gpio::GpiInterface &int2_;
+  gpio::GpiInterface &interupt1_;
+  gpio::GpiInterface &interupt2_;
   spi::SpiInterface &spi_;
 
   pw::Status PollIdleStateTransitionFor(
       std::chrono::duration<long double, std::milli> duration) {
-    if (internal::poll_true_for([this]() { return int1_.IsHigh(); },
+    if (internal::poll_true_for([this]() { return interupt1_.IsHigh(); },
                                 duration)) {
       return pw::OkStatus();
     }

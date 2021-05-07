@@ -7,6 +7,7 @@
 namespace tr::artic {
 
 TEST(StandardMode, WriteBuilder) {
+  // ARTIC R3 Datasheet, Section: 2.3.2, Figure 7
   constexpr auto kAddress = StandardModeRegisterAddress<0x00>();
   constexpr auto kRegister = pw::bytes::Array<1, 2, 3>();
   const StandardModeRegisterCommand got_command =
@@ -17,14 +18,14 @@ TEST(StandardMode, WriteBuilder) {
 }
 
 TEST(StandardMode, BurstModeRegister) {
-  // This is a valid address for all memory types.
+  // ARTIC R3 Datasheet, Section: 2.3.2, Tables 1-2
   constexpr uint16_t kSatelliteDetectionTimeoutRegisterAddress = 0x1C02;
   constexpr uint16_t kBurstModeStartAddress =
       kSatelliteDetectionTimeoutRegisterAddress;
 
   const StandardModeRegisterCommand got_command =
-      SwitchToBurstModeCommand<BurstModeMemory::kProgram,
-                               TransactionMode::kWrite>(kBurstModeStartAddress);
+      SwitchToBurstModeCommand<BurstModeMemory::PROGRAM,
+                               TransactionMode::WRITE>(kBurstModeStartAddress);
 
   constexpr auto kExpectedCommand =
       pw::bytes::Array<0x00, 0b00001000, 0x02, 0x1c>();

@@ -19,8 +19,29 @@ cc_test(
     srcs = ["standard_mode_test.cc"],
     deps = [
         ":standard_mode",
-        "@gtest//:gtest_main",
+        "//config:gtest",
         "@pigweed//pw_bytes",
+    ],
+)
+
+cc_library(
+    name = "command_mode",
+    hdrs = ["public/internal/command_mode.h"],
+    strip_include_prefix = "public",
+    deps = [
+        "@pigweed//pw_assert",
+        "@pigweed//pw_status",
+    ],
+)
+
+cc_test(
+    name = "command_mode_test",
+    srcs = ["command_mode_test.cc"],
+    deps = [
+        ":command_mode",
+        "//config:gtest",
+        "//tr_gpio",
+        "//tr_spi",
     ],
 )
 
@@ -31,8 +52,8 @@ cc_test(
     deps = [
         ":artic_r3",
         "//config:gtest",
-        "//gpio",
-        "//spi",
+        "//tr_gpio",
+        "//tr_spi",
         "@pigweed//pw_assert",
         "@pigweed//pw_chrono:system_clock",
         "@pigweed//pw_status",

@@ -11,18 +11,16 @@ constexpr size_t kStandardModeWriteCommandSize = 4;
 typedef std::array<std::byte, kStandardModeWriteCommandSize>
     StandardModeRegisterCommand;
 
-class BurstModeMemory {
- public:
-  static constexpr std::byte kProgram = std::byte{0b00000000};
-  static constexpr std::byte kX = std::byte{0b00000010};
-  static constexpr std::byte kY = std::byte{0b00000100};
-  static constexpr std::byte kIO = std::byte{0b00000110};
+enum class BurstModeMemory {
+  PROGRAM = 0b00000000,
+  X = 0b00000010,
+  Y = 0b00000100,
+  IO = 0b00000110,
 };
 
-class TransactionMode {
- public:
-  static constexpr std::byte kRead = std::byte{0x1};
-  static constexpr std::byte kWrite = std::byte{0x0};
+enum class TransactionMode {
+  READ = 0x1,
+  WRITE = 0x0,
 };
 
 template <uint8_t kAddress>
@@ -61,12 +59,14 @@ class StandardModeRegisterAddress {
       std::span<const std::byte> artic_register);
 };
 
-template <std::byte kBurstMemoryMode, std::byte kTransactionMode>
+template <BurstModeMemory kBurstMemoryMode, TransactionMode kTransactionMode>
 StandardModeRegisterCommand SwitchToBurstModeCommand(uint16_t start_address) {
   std::array<std::byte, 3> register_contents;
   pw::ByteBuilder builder(register_contents);
   constexpr std::byte kBurstModeOnMask = std::byte{0b00001000};
-  std::byte config = kBurstMemoryMode | kTransactionMode | kBurstModeOnMask;
+  std::byte config = static_cast<std::byte>(kBurstMemoryMode) |
+                     static_cast<std::byte>(kTransactionMode) |
+                     kBurstModeOnMask;
   builder.append(1, config);
   builder.PutUint16(start_address);
   constexpr auto kAddress = StandardModeRegisterAddress<0x00>();

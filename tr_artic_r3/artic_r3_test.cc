@@ -1,9 +1,9 @@
 #include "artic_r3/artic_r3.h"
 
 #include "gmock/gmock.h"
-#include "gpio/gpio.h"
 #include "gtest/gtest.h"
-#include "spi/spi.h"
+#include "tr_gpio/gpio.h"
+#include "tr_spi/spi.h"
 
 namespace tr::artic {
 
@@ -17,7 +17,10 @@ class MockGpo : public gpio::GpoInterface {
   MOCK_METHOD(void, Write, (bool state), (override));
 };
 
-class MockSpi : public spi::SpiInterface {};
+class MockSpi : public spi::SpiInterface {
+ public:
+  MOCK_METHOD(pw::Status, Write, (std::span<const std::byte>), (override));
+};
 
 TEST(ArticR3, Reset) {
   using ::testing::Return;
@@ -36,4 +39,4 @@ TEST(ArticR3, Reset) {
 
 TEST(ArticR3, todo) {}
 
-}
+}  // namespace tr::artic

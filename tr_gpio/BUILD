@@ -3,7 +3,7 @@ load("@rules_cc//cc:defs.bzl", "cc_library")
 package(default_visibility = ["//visibility:public"])
 
 cc_library(
-    name = "gpio",
-    hdrs = ["public/gpio/gpio.h"],
+    name = "tr_gpio",
+    hdrs = ["public/tr_gpio/gpio.h"],
     includes = ["public"],
 )
