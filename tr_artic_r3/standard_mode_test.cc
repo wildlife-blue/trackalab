@@ -1,10 +1,9 @@
 #include "internal/standard_mode.h"
 
-#include "gmock/gmock.h"
 #include "gtest/gtest.h"
 #include "pw_bytes/array.h"
 
-namespace tr::artic {
+namespace tr::artic::internal {
 
 TEST(StandardMode, WriteBuilder) {
   // ARTIC R3 Datasheet, Section: 2.3.2, Figure 7
@@ -33,4 +32,4 @@ TEST(StandardMode, BurstModeRegister) {
                          kExpectedCommand.begin(), kExpectedCommand.end()));
 }
 
-}  // namespace tr::artic
+}  // namespace tr::artic::internal

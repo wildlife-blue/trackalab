@@ -2,21 +2,12 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "internal/mock_io.h"
 #include "pw_status/status.h"
 #include "tr_gpio/gpio.h"
 #include "tr_spi/spi.h"
 
 namespace tr::artic::internal {
-
-class MockGpi : public gpio::GpiInterface {
- public:
-  MOCK_METHOD(bool, IsHigh, (), (override));
-};
-
-class MockSpi : public spi::SpiInterface {
- public:
-  MOCK_METHOD(pw::Status, Write, (std::span<const std::byte>), (override));
-};
 
 TEST(CommandMode, SetRxMode) {
   using ::testing::Return;
@@ -24,8 +15,7 @@ TEST(CommandMode, SetRxMode) {
   MockGpi interrupt2;
   EXPECT_CALL(interrupt2, IsHigh()).WillOnce(Return(false));
   ArticConfigWriter config_writer(spi, interrupt2);
-  pw::Status status = config_writer.SetRxMode(RxMode::ARGOS4);
-  EXPECT_EQ(pw::OkStatus(), status);
+  EXPECT_EQ(pw::OkStatus(), config_writer.SetRxMode(RxMode::ARGOS4));
 }
 
 TEST(CommandMode, SetRxModeFailed) {
@@ -34,8 +24,16 @@ TEST(CommandMode, SetRxModeFailed) {
   MockGpi interrupt2;
   EXPECT_CALL(interrupt2, IsHigh()).WillOnce(Return(true));
   ArticConfigWriter config_writer(spi, interrupt2);
-  pw::Status status = config_writer.SetRxMode(RxMode::ARGOS4);
-  EXPECT_EQ(pw::Status::Aborted(), status);
+  EXPECT_EQ(pw::Status::Aborted(), config_writer.SetRxMode(RxMode::ARGOS4));
+}
+
+TEST(CommandMode, SetTxMode) {
+  using ::testing::Return;
+  MockSpi spi;
+  MockGpi interrupt2;
+  EXPECT_CALL(interrupt2, IsHigh()).WillOnce(Return(false));
+  ArticConfigWriter config_writer(spi, interrupt2);
+  EXPECT_EQ(pw::OkStatus(), config_writer.SetTxMode(TxMode::ARGOS4_HD));
 }
 
 }  // namespace tr::artic::internal
