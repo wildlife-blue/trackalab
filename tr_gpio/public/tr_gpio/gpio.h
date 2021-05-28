@@ -1,14 +1,15 @@
 #pragma once
+#include "tr_utils/type_attributes.h"
 
 namespace tr {
 namespace gpio {
 
-class GpiInterface {
+class GpiInterface : public tr::utils::NonCopyable {
  public:
   virtual bool IsHigh() = 0;
 };
 
-class GpoInterface {
+class GpoInterface : public tr::utils::NonCopyable {
  public:
   virtual void Write(bool) = 0;
 };
