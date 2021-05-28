@@ -6,4 +6,5 @@ cc_library(
     name = "tr_gpio",
     hdrs = ["public/tr_gpio/gpio.h"],
     includes = ["public"],
+    deps = ["//tr_utils:attributes"],
 )
