@@ -242,3 +242,12 @@ git_repository(
     commit = "703bd9caab50b139428cea1aaff9974ebee5742e",
     remote = "https://github.com/google/googletest.git",
 )
+
+# Setup clang-tidy aspects.
+# Required by: tracka.
+# Used in modules: //:all
+git_repository(
+    name = "bazel_clang_tidy",
+    commit = "69aa13e6d7cf102df70921c66be15d4592251e56",
+    remote = "https://github.com/silvergasp/bazel_clang_tidy.git",
+)

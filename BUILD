@@ -27,3 +27,8 @@ buildifier_test(
     mode = "diff",
     verbose = True,
 )
+
+filegroup(
+    name = "clang_tidy_config",
+    data = [".clang-tidy"],
+)

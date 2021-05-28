@@ -1,0 +1,8 @@
+Checks: "\
+  bugprone-*,\
+  google-*,\
+  performance-*"
+
+HeaderFilterRegex: ".*"
+
+WarningsAsErrors: "*"
