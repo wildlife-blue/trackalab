@@ -1,8 +1,7 @@
 # Tracka
 
 ![logo](docs/assets/logo.png)
-
-[![codecov](https://codecov.io/gh/wildlife-blue/tracka/branch/main/graph/badge.svg?token=YSLSM6DZ2T)](https://codecov.io/gh/wildlife-blue/tracka)
+[![codecov](https://codecov.io/gh/wildlife-blue/trackalab/branch/main/graph/badge.svg?token=YSLSM6DZ2T)](https://codecov.io/gh/wildlife-blue/trackalab)
 [![CI](https://github.com/wildlife-blue/tracka/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/wildlife-blue/tracka/actions/workflows/ci.yml)
 
 **WARNING!**: This repository is under construction, please expect breaking
