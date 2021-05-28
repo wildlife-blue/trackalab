@@ -5,3 +5,5 @@ user.bazelrc
 # Node
 node_modules
 
+# Vscode
+.vscode
