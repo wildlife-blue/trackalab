@@ -2,25 +2,14 @@
 
 #include "gmock/gmock.h"
 #include "gtest/gtest.h"
+#include "internal/mock_io.h"
 #include "tr_gpio/gpio.h"
 #include "tr_spi/spi.h"
 
 namespace tr::artic {
-
-class MockGpi : public gpio::GpiInterface {
- public:
-  MOCK_METHOD(bool, IsHigh, (), (override));
-};
-
-class MockGpo : public gpio::GpoInterface {
- public:
-  MOCK_METHOD(void, Write, (bool state), (override));
-};
-
-class MockSpi : public spi::SpiInterface {
- public:
-  MOCK_METHOD(pw::Status, Write, (std::span<const std::byte>), (override));
-};
+using internal::MockGpi;
+using internal::MockGpo;
+using internal::MockSpi;
 
 TEST(ArticR3, Reset) {
   using ::testing::Return;
@@ -36,7 +25,5 @@ TEST(ArticR3, Reset) {
   ArticR3 artic(reset, device_select, int1, int2, spi);
   artic.Reset();
 }
-
-TEST(ArticR3, todo) {}
 
 }  // namespace tr::artic

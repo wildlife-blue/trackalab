@@ -5,7 +5,7 @@
 
 #include "pw_bytes/byte_builder.h"
 
-namespace tr::artic {
+namespace tr::artic::internal {
 
 constexpr size_t kStandardModeWriteCommandSize = 4;
 typedef std::array<std::byte, kStandardModeWriteCommandSize>
@@ -70,8 +70,7 @@ StandardModeRegisterCommand SwitchToBurstModeCommand(uint16_t start_address) {
   builder.append(1, config);
   builder.PutUint16(start_address);
   constexpr auto kAddress = StandardModeRegisterAddress<0x00>();
-  auto a = StandardModeWriteCommand(kAddress, register_contents);
-  return a;
+  return StandardModeWriteCommand(kAddress, register_contents);
 }
 
-}  // namespace tr::artic
+}  // namespace tr::artic::internal
