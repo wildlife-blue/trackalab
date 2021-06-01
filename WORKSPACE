@@ -55,7 +55,7 @@ protobuf_deps()
 # Used in modules: //:All.
 git_repository(
     name = "bazel_embedded",
-    commit = "16a165f072fdeb8ae11b15eb45c3c7e3dc9583b8",
+    commit = "fe1f0f0fcb3ee43063dea96e4216157ee13b5334",
     remote = "https://github.com/silvergasp/bazel-embedded.git",
 )
 
@@ -108,6 +108,17 @@ load(
 
 register_gcc_arm_none_toolchain()
 
+load(
+    "@bazel_embedded//toolchains/tools/sysroot:sysroot_repository.bzl",
+    "sysroot_archive",
+)
+
+sysroot_archive(
+    name = "org_chromium_sysroot_linux_x64",
+    sha256 = "84656a6df544ecef62169cfe3ab6e41bb4346a62d3ba2a045dc5a0a2ecea94a3",
+    urls = ["https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/2202c161310ffde63729f29d27fe7bb24a0bc540/debian_stretch_amd64_sysroot.tar.xz"],
+)
+
 # Fetch LLVM/Clang compiler and register for toolchain resolution.
 load(
     "@bazel_embedded//toolchains/compilers/llvm:llvm_repository.bzl",
@@ -116,6 +127,7 @@ load(
 
 llvm_repository(
     name = "com_llvm_compiler",
+    sysroot = "@org_chromium_sysroot_linux_x64//:all",
 )
 
 load(
@@ -239,7 +251,7 @@ http_archive(
 # Used in modules: config, spi, gpio, artic_r3.
 git_repository(
     name = "gtest",
-    commit = "703bd9caab50b139428cea1aaff9974ebee5742e",
+    commit = "a3460d1aeeaa43fdf137a6adefef10ba0b59fe4b",
     remote = "https://github.com/google/googletest.git",
 )
 
