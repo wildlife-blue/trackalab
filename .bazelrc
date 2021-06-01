@@ -12,5 +12,8 @@ coverage --combined_report=lcov
 # Strict environment to enable remote builds
 build --incompatible_strict_action_env
 
+# C++ version.
+build --cxxopt=-std=c++17
+
 # Enable clang tidy
 build:clang-tidy --aspects @bazel_clang_tidy//clang_tidy:clang_tidy.bzl%clang_tidy_aspect --output_groups=report
