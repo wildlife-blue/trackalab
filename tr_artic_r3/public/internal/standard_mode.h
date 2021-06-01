@@ -3,6 +3,7 @@
 #include <cstddef>
 #include <span>
 
+#include "pw_assert/check.h"
 #include "pw_bytes/byte_builder.h"
 
 namespace tr::artic::internal {
@@ -31,11 +32,12 @@ template <uint8_t kAddress>
 StandardModeRegisterCommand StandardModeWriteCommand(
     const StandardModeRegisterAddress<kAddress> &address,
     std::span<const std::byte> artic_register) {
-  std::array<std::byte, kStandardModeWriteCommandSize> result;
+  StandardModeRegisterCommand result;
+  PW_CHECK_UINT_EQ(result.size() - 1, artic_register.size());
   // [A6, A5, A4, A3, A2, A1, A0, R/(NW)]
   result[0] = (address.address() << 1) | std::byte{0x00};
-  auto result_register = std::as_writable_bytes(std::span(result))
-                             .last(kStandardModeWriteCommandSize - 1);
+  auto result_register =
+      std::span(result).last(kStandardModeWriteCommandSize - 1);
   std::copy(artic_register.begin(), artic_register.end(),
             result_register.begin());
   return result;
@@ -67,8 +69,8 @@ StandardModeRegisterCommand SwitchToBurstModeCommand(uint16_t start_address) {
   std::byte config = static_cast<std::byte>(kBurstMemoryMode) |
                      static_cast<std::byte>(kTransactionMode) |
                      kBurstModeOnMask;
-  builder.append(1, config);
-  builder.PutUint16(start_address);
+  PW_CHECK_OK(builder.append(1, config).status());
+  PW_CHECK_OK(builder.PutUint16(start_address).status());
   constexpr auto kAddress = StandardModeRegisterAddress<0x00>();
   return StandardModeWriteCommand(kAddress, register_contents);
 }

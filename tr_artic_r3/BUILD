@@ -24,6 +24,7 @@ cc_library(
     hdrs = ["public/internal/standard_mode.h"],
     strip_include_prefix = "public",
     deps = [
+        "@pigweed//pw_assert",
         "@pigweed//pw_bytes",
         "@pigweed//pw_span",
     ],
@@ -36,6 +37,7 @@ cc_test(
         ":mock_io",
         ":standard_mode",
         "//config:gtest",
+        "@pigweed//pw_span",
     ],
 )
 

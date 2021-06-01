@@ -19,13 +19,10 @@ TEST(StandardMode, WriteBuilder) {
 TEST(StandardMode, BurstModeRegister) {
   // ARTIC R3 Datasheet, Section: 2.3.2, Tables 1-2
   constexpr uint16_t kSatelliteDetectionTimeoutRegisterAddress = 0x1C02;
-  constexpr uint16_t kBurstModeStartAddress =
-      kSatelliteDetectionTimeoutRegisterAddress;
-
   const StandardModeRegisterCommand got_command =
       SwitchToBurstModeCommand<BurstModeMemory::PROGRAM,
-                               TransactionMode::WRITE>(kBurstModeStartAddress);
-
+                               TransactionMode::WRITE>(
+          kSatelliteDetectionTimeoutRegisterAddress);
   constexpr auto kExpectedCommand =
       pw::bytes::Array<0x00, 0b00001000, 0x02, 0x1c>();
   EXPECT_TRUE(std::equal(got_command.begin(), got_command.end(),
