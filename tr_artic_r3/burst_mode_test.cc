@@ -13,12 +13,14 @@
 
 namespace tr::artic::internal {
 
+using ::testing::_;
+using ::testing::ElementsAre;
+using ::testing::Return;
+using b = std::byte;
+
 TEST(BurstMode, ArticConfigRead) {
   // ARTIC R3 Datasheet, Section: Read Example - 3.4.1
-  using ::testing::_;
-  using ::testing::ElementsAre;
-  using ::testing::Return;
-  using b = std::byte;
+
   MockSpi spi;
   // TODO(trbug/4): Uncomment the line below when there is an upstream fix for
   // ElementsAre matching with spans.
@@ -38,4 +40,41 @@ TEST(BurstMode, ArticConfigRead) {
             pw::OkStatus());
 }
 
+TEST(BurstMode, RxTimeoutWrite) {
+  MockSpi spi;
+  // TODO(trbug/4): Uncomment the line below when there is an upstream fix for
+  // ElementsAre matching with spans.
+  // EXPECT_CALL(spi, Write(ElementsAre(b{0x00}, b{0x0A}, b{0x1C}, b{0x01},
+  // b{0x0000000A})));
+  MockGpi interrupt1;
+  EXPECT_CALL(interrupt1, IsHigh()).WillOnce(Return(true));
+  MockGpi interrupt2;
+  EXPECT_CALL(interrupt2, IsHigh()).WillOnce(Return(false));
+
+  auto rx_timeout_register = pw::bytes::Array<0x00, 0x00, 0x0A>();
+  EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
+                .Write(kRxTimeoutRegister, rx_timeout_register),
+            pw::OkStatus());
+}
+
+TEST(BurstMode, ReadBufferToSmall) {
+  MockSpi spi;
+  MockGpi interrupt1;
+  MockGpi interrupt2;
+  std::array<std::byte, 2> argos_config_buffer;
+  EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
+                .Read(kArgosConfigRegister, argos_config_buffer)
+                .status(),
+            pw::Status::FailedPrecondition());
+}
+
+TEST(BurstMode, WriteBufferToLarge) {
+  MockSpi spi;
+  MockGpi interrupt1;
+  MockGpi interrupt2;
+  auto register_buffer_to_big = pw::bytes::Array<0x00, 0x00, 0x00, 0x00>();
+  EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
+                .Write(kRxTimeoutRegister, register_buffer_to_big),
+            pw::Status::FailedPrecondition());
+}
 }  // namespace tr::artic::internal
