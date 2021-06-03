@@ -35,7 +35,7 @@ jobs:
         run: bazelisk build //...
 
       - name: test
-        run: bazelisk coverage //... --test_output=errors --cxxopt=-fsanitize=address --linkopt=-fsanitize=address
+        run: bazelisk coverage //... --test_output=errors
 
       - uses: codecov/codecov-action@v1
         with:
