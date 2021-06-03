@@ -39,9 +39,12 @@ class BurstMode {
             gpio::GpiInterface &interrupt2)
       : spi_(spi), interrupt1_(interrupt1), interrupt2_(interrupt2) {}
 
-  // Reads a register in burst mode
+  // Reads a register in burst mode.
   pw::Result<pw::ConstByteSpan> Read(const BurstRegister &burst_register,
                                      pw::ByteSpan register_buffer);
+  // Writes a register in burst mode.
+  pw::Status Write(const BurstRegister &burst_register,
+                   pw::ConstByteSpan register_buffer);
 
  private:
   spi::SpiInterface &spi_;
