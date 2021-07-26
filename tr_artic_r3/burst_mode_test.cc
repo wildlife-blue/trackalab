@@ -35,7 +35,7 @@ TEST(BurstMode, ArticConfigRead) {
 
   std::array<std::byte, 3> argos_config_buffer;
   EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
-                .Read(kArgosConfigRegister, argos_config_buffer)
+                .Read<BurstRegisterID::ARGOS_CONFIG>(argos_config_buffer)
                 .status(),
             pw::OkStatus());
 }
@@ -53,7 +53,7 @@ TEST(BurstMode, RxTimeoutWrite) {
 
   auto rx_timeout_register = pw::bytes::Array<0x00, 0x00, 0x0A>();
   EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
-                .Write(kRxTimeoutRegister, rx_timeout_register),
+                .Write<BurstRegisterID::RX_TIMEOUT>(rx_timeout_register),
             pw::OkStatus());
 }
 
@@ -63,7 +63,7 @@ TEST(BurstMode, ReadBufferToSmall) {
   MockGpi interrupt2;
   std::array<std::byte, 2> argos_config_buffer;
   EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
-                .Read(kArgosConfigRegister, argos_config_buffer)
+                .Read<BurstRegisterID::ARGOS_CONFIG>(argos_config_buffer)
                 .status(),
             pw::Status::FailedPrecondition());
 }
@@ -74,7 +74,7 @@ TEST(BurstMode, WriteBufferToLarge) {
   MockGpi interrupt2;
   auto register_buffer_to_big = pw::bytes::Array<0x00, 0x00, 0x00, 0x00>();
   EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
-                .Write(kRxTimeoutRegister, register_buffer_to_big),
+                .Write<BurstRegisterID::RX_TIMEOUT>(register_buffer_to_big),
             pw::Status::FailedPrecondition());
 }
 }  // namespace tr::artic::internal
