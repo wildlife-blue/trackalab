@@ -17,6 +17,23 @@ git_repository(
     remote = "https://github.com/silvergasp/platforms.git",
 )
 
+# Setup host toolchain.
+# Required by: All.
+# Used in modules: All CC modules.
+git_repository(
+    name = "rules_cc_toolchain",
+    commit = "dd9265e3ce0daa444911040430bd716076869b34",
+    remote = "https://github.com/silvergasp/rules_cc_toolchain.git",
+)
+
+load("@rules_cc_toolchain//:rules_cc_toolchain_deps.bzl", "rules_cc_toolchain_deps")
+
+rules_cc_toolchain_deps()
+
+load("@rules_cc_toolchain//cc_toolchain:cc_toolchain.bzl", "register_cc_toolchains")
+
+register_cc_toolchains()
+
 # Set up Starlark library
 # Required by: io_bazel_rules_go, com_google_protobuf.
 # Used in modules: None.
@@ -64,8 +81,16 @@ git_repository(
 # Used by modules: None.
 git_repository(
     name = "pigweed",
-    commit = "077dc10b3811612c679073c796ed8a404e3e1520",
+    commit = "a6039dd7bff372b32c61db853862a8b9c4f16846",
     remote = "https://pigweed.googlesource.com/pigweed/pigweed",
+)
+
+load("@pigweed//pw_build:target_config.bzl", "pigweed_config")
+
+# Configure Pigweeds backend.
+pigweed_config(
+    name = "pigweed_config",
+    build_file = "@pigweed//targets:default_config.BUILD",
 )
 
 # Instantiate Pigweed configuration for embedded toolchain,
@@ -107,35 +132,6 @@ load(
 )
 
 register_gcc_arm_none_toolchain()
-
-load(
-    "@bazel_embedded//toolchains/tools/sysroot:sysroot_repository.bzl",
-    "sysroot_archive",
-)
-
-sysroot_archive(
-    name = "org_chromium_sysroot_linux_x64",
-    sha256 = "84656a6df544ecef62169cfe3ab6e41bb4346a62d3ba2a045dc5a0a2ecea94a3",
-    urls = ["https://commondatastorage.googleapis.com/chrome-linux-sysroot/toolchain/2202c161310ffde63729f29d27fe7bb24a0bc540/debian_stretch_amd64_sysroot.tar.xz"],
-)
-
-# Fetch LLVM/Clang compiler and register for toolchain resolution.
-load(
-    "@bazel_embedded//toolchains/compilers/llvm:llvm_repository.bzl",
-    "llvm_repository",
-)
-
-llvm_repository(
-    name = "com_llvm_compiler",
-    sysroot = "@org_chromium_sysroot_linux_x64//:all",
-)
-
-load(
-    "@bazel_embedded//toolchains/clang:clang_toolchain.bzl",
-    "register_clang_toolchain",
-)
-
-register_clang_toolchain()
 
 # Setup Golang toolchain rules
 # Required by: bazel_gazelle, com_github_bazelbuild_buildtools.

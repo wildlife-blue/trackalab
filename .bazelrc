@@ -17,3 +17,6 @@ build --cxxopt=-std=c++17
 
 # Enable clang tidy
 build:clang-tidy --aspects @bazel_clang_tidy//clang_tidy:clang_tidy.bzl%clang_tidy_aspect --output_groups=report
+
+# Configures toolchain with polyfill headers.
+build --@rules_cc_toolchain_config//:user_defined=@pigweed//pw_polyfill:toolchain_polyfill_overrides
