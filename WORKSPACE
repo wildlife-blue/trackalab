@@ -1,5 +1,5 @@
 workspace(
-    name = "tracka",
+    name = "trackalab",
 )
 
 load(
@@ -22,7 +22,7 @@ git_repository(
 # Used in modules: All CC modules.
 git_repository(
     name = "rules_cc_toolchain",
-    commit = "dd9265e3ce0daa444911040430bd716076869b34",
+    commit = "80b51ba81f14eebe06684efa25261f6dc46e9b29",
     remote = "https://github.com/silvergasp/rules_cc_toolchain.git",
 )
 
@@ -249,13 +249,4 @@ git_repository(
     name = "gtest",
     commit = "a3460d1aeeaa43fdf137a6adefef10ba0b59fe4b",
     remote = "https://github.com/google/googletest.git",
-)
-
-# Setup clang-tidy aspects.
-# Required by: tracka.
-# Used in modules: //:all
-git_repository(
-    name = "bazel_clang_tidy",
-    commit = "69aa13e6d7cf102df70921c66be15d4592251e56",
-    remote = "https://github.com/silvergasp/bazel_clang_tidy.git",
 )

@@ -1,8 +1,3 @@
-Checks: "\
-  bugprone-*,\
-  google-*,\
-  performance-*"
-
-HeaderFilterRegex: ".*"
-
-WarningsAsErrors: "*"
+Checks:          'clang-diagnostic-*,clang-analyzer-*,google-*,performance-*,readability-*,portability-*,hicpp-*,cert-*,modernize-*,misc-*'
+WarningsAsErrors: '.*'
+FormatStyle:    Google 

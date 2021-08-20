@@ -3,6 +3,7 @@ load(
     "buildifier",
     "buildifier_test",
 )
+load("@rules_cc_toolchain//tools/clang_tidy:clang_tidy.bzl", "clang_tidy_config")
 
 licenses(["notice"])  # MIT Licence
 
@@ -28,7 +29,8 @@ buildifier_test(
     verbose = True,
 )
 
-filegroup(
+clang_tidy_config(
     name = "clang_tidy_config",
-    data = [".clang-tidy"],
+    config = ".clang-tidy",
+    visibility = ["//visibility:public"],
 )
