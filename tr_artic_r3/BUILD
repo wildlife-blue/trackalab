@@ -73,6 +73,7 @@ cc_library(
         ":standard_mode",
         "//tr_gpio",
         "//tr_spi",
+        "@pigweed//pw_preprocessor",
         "@pigweed//pw_status",
     ],
 )

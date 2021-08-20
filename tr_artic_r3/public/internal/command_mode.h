@@ -21,33 +21,39 @@ enum class Instructions {
   START_RX_1_MESSAGE = 0b10000010,
   START_RX_2_MESSAGE = 0b10000011,
   START_RX_FOR_FIXED_TIME = 0b10000100,
+  TRANSMIT_1_PACKAGE_AND_GO_IDLE = 0b01001000,
 };
 
-class ArticConfigWriter {
+enum class HouseKeeping {
+  CLEAR_INTERRUPT1 = 0b10000000,
+  CLEAR_INTERRUPT2 = 0b11000000,
+};
+
+class ArticCommandWriter {
  public:
-  ArticConfigWriter(spi::SpiInterface &spi, gpio::GpiInterface &int2)
+  ArticCommandWriter(spi::SpiInterface &spi, gpio::GpiInterface &int2)
       : spi_(spi), interrupt2_(int2) {}
 
-  // Sets the receive mode of the radio.
-  pw::Status SetRxMode(RxMode mode) {
-    // TODO(tracka/1): Verify ARGOS configuration register.
-    return WriteCommand(mode);
+  pw::Status WriteCommand(RxMode command) {
+    return WriteCommand<RxMode>(command);
   }
 
-  // Sets the transmit mode of the radio.
-  pw::Status SetTxMode(TxMode mode) {
-    // TODO(tracka/1): Verify ARGOS configuration register.
-    return WriteCommand(mode);
+  pw::Status WriteCommand(TxMode command) {
+    return WriteCommand<TxMode>(command);
+  }
+
+  pw::Status WriteCommand(Instructions command) {
+    return WriteCommand<Instructions>(command);
+  }
+
+  pw::Status WriteCommand(HouseKeeping command) {
+    return WriteCommand<HouseKeeping>(command);
   }
 
  private:
-  // Checks state of the
-  bool Ok() { return !interrupt2_.IsHigh(); }
-
   // Takes any enum type and writes a single byte value over spi.
   template <class T>
   pw::Status WriteCommand(T command) {
-    static_assert(std::is_enum<T>::value);
     const std::byte command_byte = static_cast<std::byte>(command);
     std::span<const std::byte> buffer(&command_byte, 1);
     PW_CHECK_OK(spi_.Write(buffer));
@@ -57,6 +63,31 @@ class ArticConfigWriter {
     return pw::OkStatus();
   }
 
+  // Checks state of the tranceiver.
+  bool Ok() { return !interrupt2_.IsHigh(); }
+  spi::SpiInterface &spi_;
+  gpio::GpiInterface &interrupt2_;
+};
+
+class ArticConfigWriter {
+ public:
+  ArticConfigWriter(spi::SpiInterface &spi, gpio::GpiInterface &int2)
+      : spi_(spi), interrupt2_(int2), command_writer_(spi, int2) {}
+
+  // Sets the receive mode of the radio.
+  pw::Status SetRxMode(RxMode mode) {
+    // TODO(tracka/1): Verify ARGOS configuration register.
+    return command_writer_.WriteCommand(mode);
+  }
+
+  // Sets the transmit mode of the radio.
+  pw::Status SetTxMode(TxMode mode) {
+    // TODO(tracka/1): Verify ARGOS configuration register.
+    return command_writer_.WriteCommand(mode);
+  }
+
+ private:
+  ArticCommandWriter command_writer_;
   spi::SpiInterface &spi_;
   gpio::GpiInterface &interrupt2_;
 };
