@@ -45,7 +45,7 @@ TEST(BurstMode, RxTimeoutWrite) {
   // TODO(trbug/4): Uncomment the line below when there is an upstream fix for
   // ElementsAre matching with spans.
   // EXPECT_CALL(spi, Write(ElementsAre(b{0x00}, b{0x0A}, b{0x1C}, b{0x01},
-  // b{0x0000000A})));
+  // b{0x00}, b{0x00},b{0x00},b{0x0A})));
   MockGpi interrupt1;
   EXPECT_CALL(interrupt1, IsHigh()).WillOnce(Return(true));
   MockGpi interrupt2;
@@ -77,4 +77,70 @@ TEST(BurstMode, WriteBufferToLarge) {
                 .Write<BurstRegisterID::RX_TIMEOUT>(register_buffer_to_big),
             pw::Status::FailedPrecondition());
 }
+
+TEST(BurstMode, ReadFirmwareVersion) {
+  using testing::ElementsAreArray;
+  auto kVersionRegister = pw::bytes::Array<
+      // Version string.
+      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+      'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a', 'a',
+      // Version number.
+      1, 0, 0>();
+
+  MockSpi spi;
+  EXPECT_CALL(spi, Read(_))
+      .WillRepeatedly(Return(pw::Result<pw::ConstByteSpan>(kVersionRegister)));
+  // TODO(trbug/4): Uncomment the line below when there is an upstream fix for
+  // ElementsAre matching with spans.
+  // EXPECT_CALL(spi, Write(ElementsAre(b{0x00}, b{0x0B}, b{0x1D}, b{0x52})));
+
+  MockGpi interrupt1;
+  EXPECT_CALL(interrupt1, IsHigh()).WillRepeatedly(Return(true));
+
+  MockGpi interrupt2;
+  EXPECT_CALL(interrupt2, IsHigh()).WillRepeatedly(Return(false));
+
+  BurstMode burst_mode(spi, interrupt1, interrupt2);
+  FirmwareVersion version(burst_mode);
+
+  pw::Result<std::string_view> version_string_result =
+      version.VersionAsString();
+  ASSERT_EQ(version_string_result.status(), pw::OkStatus());
+  std::string_view version_string = version_string_result.value();
+  char expected_version_string[] = "aaaaaaaaaaaaaaaaaaaaaaaa";
+  ASSERT_THAT(version_string,
+              ElementsAreArray(std::string_view(expected_version_string)));
+
+  ASSERT_EQ(version.GetMajorVersion().value(), 1);
+  ASSERT_EQ(version.GetMinorVersion().value(), 0);
+  ASSERT_EQ(version.GetPatchVersion().value(), 0);
+}
+
+TEST(BurstMode, ReadArgosConfiguration) {
+  // ARTIC R3 Datasheet, Section: Read Example - 3.3.1
+  // Argos register in RxMode: Argos 3 Rx backup mode.
+  // Argos register in TxMode: Argos PTT-A4-VLD.
+  auto kArgosConfigRegister = pw::bytes::Array<0x00, 0x00, 0x61>();
+
+  MockSpi spi;
+  EXPECT_CALL(spi, Read(_))
+      .WillRepeatedly([&kArgosConfigRegister](pw::ByteSpan buffer) {
+        std::copy(kArgosConfigRegister.begin(), kArgosConfigRegister.end(),
+                  buffer.begin());
+        return pw::Result<pw::ConstByteSpan>(buffer);
+      });
+
+  MockGpi interrupt1;
+  EXPECT_CALL(interrupt1, IsHigh()).WillRepeatedly(Return(true));
+
+  MockGpi interrupt2;
+  EXPECT_CALL(interrupt2, IsHigh()).WillRepeatedly(Return(false));
+
+  BurstMode burst_mode(spi, interrupt1, interrupt2);
+  ArgosConfiguration argos_config(burst_mode);
+
+  EXPECT_EQ(argos_config.GetRxMode().value(), RxModeConfig::ARGOS_3_BACKUP);
+  EXPECT_EQ(argos_config.GetTxMode().value(), TxModeConfig::ARGOS_PTT_A4_VLD);
+}
+
 }  // namespace tr::artic::internal

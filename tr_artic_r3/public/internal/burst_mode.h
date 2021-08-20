@@ -1,7 +1,10 @@
 #pragma once
 #include <cstdint>
+#include <span>
+#include <string_view>
 
 #include "internal/standard_mode.h"
+#include "pw_preprocessor/compiler.h"
 #include "pw_status/status.h"
 #include "tr_gpio/gpio.h"
 #include "tr_spi/spi.h"
@@ -99,6 +102,10 @@ class BurstMode {
     static_assert(burst_register.permission == Permission::READ ||
                       burst_register.permission == Permission::READ_WRITE,
                   "Read not supported for this register.");
+    if (register_buffer.size() < burst_register.size * kBurstRegisterWordSize) {
+      return pw::Status::FailedPrecondition();
+    }
+
     return Read(burst_register.size, burst_register.address, register_buffer);
   }
 
@@ -109,6 +116,9 @@ class BurstMode {
     static_assert(burst_register.permission == Permission::WRITE ||
                       burst_register.permission == Permission::READ_WRITE,
                   "Write not supported for this register.");
+    if (register_buffer.size() > burst_register.size * kBurstRegisterWordSize) {
+      return pw::Status::FailedPrecondition();
+    }
     return Write(burst_register.size, burst_register.address, register_buffer);
   }
 
@@ -121,6 +131,79 @@ class BurstMode {
   spi::SpiInterface &spi_;
   gpio::GpiInterface &interrupt1_;
   gpio::GpiInterface &interrupt2_;
+};
+
+enum class ExceptionInfo {
+  OK = 0x000000,
+  INVALID_COMMAND = 0x000004,
+  LPF_INCORRECT = 0x000005,
+  PLL_TIMEOUT = 0x000006,
+  UNDEFINED_ARGOS_MODE = 0x000007,
+  TX_TIMEOUT = 0x00000A,
+  PLL_FREQ_DIFFERENCE_TO_LARGE = 0x00000E,
+  DSP_RESET = 0x00000F,
+  UNSUPPORTED = 0x000014,
+  ARGOS_WRONG_ID = 0x000015,
+};
+
+class FirmwareVersion {
+ private:
+  using buffer_t =
+      std::array<std::byte,
+                 BurstRegister<BurstRegisterID::FIRMWARE_VERSION>().size *
+                     kBurstRegisterWordSize>;
+
+ public:
+  constexpr FirmwareVersion(BurstMode &burst_mode)
+      : burst_mode_(burst_mode), version_buffer_() {}
+
+  pw::Result<std::string_view> VersionAsString();
+
+  pw::Result<uint8_t> GetMajorVersion();
+
+  pw::Result<uint8_t> GetMinorVersion();
+
+  pw::Result<uint8_t> GetPatchVersion();
+
+ private:
+  pw::Result<pw::ConstByteSpan> GetVersionBuffer(std::span<std::byte> buffer);
+
+  BurstMode &burst_mode_;
+
+  buffer_t version_buffer_;
+};
+
+enum class RxModeConfig {
+  ARGOS_3 = 0x00,
+  ARGOS_3_BACKUP = 0x01,
+  ARGOS_4 = 0x02,
+};
+
+enum class TxModeConfig {
+  ARGOS_PTT_A2 = 0x00,
+  ARGOS_PTT_A3 = 0x01,
+  ARGOS_PTT_ZE = 0x02,
+  ARGOS_PTT_HD = 0x03,
+  ARGOS_PTT_A4_MD = 0x04,
+  ARGOS_PTT_A4_HD = 0x05,
+  ARGOS_PTT_A4_VLD = 0x06,
+};
+
+PW_PACKED(struct) ArgosConfigurationRegister {
+  uint16_t reserved;
+  RxModeConfig rx_configuration : 4;
+  TxModeConfig tx_configuration : 4;
+};
+
+class ArgosConfiguration {
+ public:
+  ArgosConfiguration(BurstMode &burst_mode) : burst_mode_(burst_mode) {}
+
+  pw::Result<RxModeConfig> GetRxMode();
+  pw::Result<TxModeConfig> GetTxMode();
+
+ private:
+  BurstMode &burst_mode_;
 };
 
 }  // namespace tr::artic::internal
