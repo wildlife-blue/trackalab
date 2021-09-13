@@ -11,23 +11,6 @@ Tracka is an open source wildlife satellite tag that connects to the Argos netwo
 This tag is being developed in the open because we want to fully maximize the
 impact that this tag will have economically, socially and environmentally.
 
-# Wildlife-blue
-
-The primary goal for the wildlife-blue collective of projects is to
-fundamentally shift our current way of thinking about how we interact with our
-environment. Very often it is tempting to think about the environment as
-'something else' almost as if we are in competition with it. We build houses,
-roads, cars all to escape and control the natural world. Don't get me wrong,
-living in a house is pretty great. **But**, we as a species integrate with our
-environment in pretty destructive ways. This hurts the natural ecosystem but
-also us as individuals. Unless you live under a rock you've probably at least
-heard of problems such as deforestation, climate change and ocean plastic. Very
-often in the discourse around these issues, the arguments are reduced down to
-conflicts between economics and environmental sustainability. The goal of
-wildlife-blue is demonstrate that there is another narrative. By shifting our
-diverging relationship with nature to one, slowly converging we can
-create a healthier, more productive and more economically prosperous society.
-
 ## Getting started
 
 There a are a few different technical area's that make up the design for a
