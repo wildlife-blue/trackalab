@@ -21,7 +21,7 @@ TEST(BurstMode, ArticConfigRead) {
   // ARTIC R3 Datasheet, Section: Read Example - 3.4.1
 
   MockSpi spi;
-  // TODO(trbug/4): Uncomment the line below when there is an upstream fix for
+  // TODO(#4): Uncomment the line below when there is an upstream fix for
   // ElementsAre matching with spans.
   // EXPECT_CALL(spi, Write(ElementsAre(b{0x00}, b{0x0B}, b{0x1C}, b{0x00})));
   constexpr auto kConfigRegister = pw::bytes::Array<0, 0, 0>();
@@ -41,7 +41,7 @@ TEST(BurstMode, ArticConfigRead) {
 
 TEST(BurstMode, RxTimeoutWrite) {
   MockSpi spi;
-  // TODO(trbug/4): Uncomment the line below when there is an upstream fix for
+  // TODO(#4): Uncomment the line below when there is an upstream fix for
   // ElementsAre matching with spans.
   // EXPECT_CALL(spi, Write(ElementsAre(b{0x00}, b{0x0A}, b{0x1C}, b{0x01},
   // b{0x00}, b{0x00},b{0x00},b{0x0A})));
@@ -90,7 +90,7 @@ TEST(BurstMode, ReadFirmwareVersion) {
   MockSpi spi;
   EXPECT_CALL(spi, Read(_))
       .WillRepeatedly(Return(pw::Result<pw::ConstByteSpan>(kVersionRegister)));
-  // TODO(trbug/4): Uncomment the line below when there is an upstream fix for
+  // TODO(#4): Uncomment the line below when there is an upstream fix for
   // ElementsAre matching with spans.
   // EXPECT_CALL(spi, Write(ElementsAre(b{0x00}, b{0x0B}, b{0x1D}, b{0x52})));
 

@@ -76,13 +76,13 @@ class ArticConfigWriter {
 
   // Sets the receive mode of the radio.
   pw::Status SetRxMode(RxMode mode) {
-    // TODO(tracka/1): Verify ARGOS configuration register.
+    // TODO(#1): Verify ARGOS configuration register.
     return command_writer_.WriteCommand(mode);
   }
 
   // Sets the transmit mode of the radio.
   pw::Status SetTxMode(TxMode mode) {
-    // TODO(tracka/1): Verify ARGOS configuration register.
+    // TODO(#1): Verify ARGOS configuration register.
     return command_writer_.WriteCommand(mode);
   }
 

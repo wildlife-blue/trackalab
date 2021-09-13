@@ -133,7 +133,7 @@ pw::Result<pw::ConstByteSpan> BuildArgos2PTTPayload(uint32_t id_number,
   static constexpr uint32_t kArgosWordSize = 4;  // bytes
   static constexpr uint32_t kIdSize = 1;
   static constexpr uint8_t kMaxPayloadArgosWords = 0x08;
-  // TODO(tracka/8): Tighten this constraint, this currently checks for max
+  // TODO(#8): Tighten this constraint, this currently checks for max
   // size.
   if (destination.size() <
       kPreambleSize + kMaxPayloadArgosWords * kArgosWordSize) {
