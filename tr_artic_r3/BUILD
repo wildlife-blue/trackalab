@@ -74,6 +74,7 @@ cc_library(
         "//tr_gpio",
         "//tr_spi",
         "@pigweed//pw_preprocessor",
+        "@pigweed//pw_result",
         "@pigweed//pw_status",
     ],
 )

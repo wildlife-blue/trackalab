@@ -5,6 +5,7 @@
 
 #include "internal/standard_mode.h"
 #include "pw_preprocessor/compiler.h"
+#include "pw_result/result.h"
 #include "pw_status/status.h"
 #include "tr_gpio/gpio.h"
 #include "tr_spi/spi.h"
@@ -205,5 +206,21 @@ class ArgosConfiguration {
  private:
   BurstMode &burst_mode_;
 };
+
+constexpr uint32_t RoundUpIntegerDivision(uint32_t dividend, uint32_t divisor) {
+  return (dividend + divisor - 1) / divisor;
+}
+
+constexpr uint8_t Parity(uint8_t var) {
+  uint8_t parity = 0;
+  for (uint8_t i = 0; i < 8; ++i) {
+    parity ^= (var & (1 << i)) ? 1 : 0;
+  }
+  return parity;
+}
+
+pw::Result<pw::ConstByteSpan> BuildArgos2PTTPayload(uint32_t id_number,
+                                                    pw::ConstByteSpan payload,
+                                                    pw::ByteSpan destination);
 
 }  // namespace tr::artic::internal

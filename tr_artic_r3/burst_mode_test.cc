@@ -146,4 +146,34 @@ TEST(BurstMode, ReadArgosConfiguration) {
   EXPECT_EQ(argos_config.GetTxMode().value(), TxModeConfig::ARGOS_PTT_A4_VLD);
 }
 
+TEST(BurstMode, BuildArgos2PTTPayload) {
+  constexpr uint32_t kID = 0x1234567;
+  constexpr auto kPayload =
+      pw::bytes::Array<0x9B, 0xFC, 0x3B, 0xD1, 0xD1, 0x3D, 0xDA, 0xDA, 0xCF,
+                       0x60, 0x01, 0x4B, 0x5F, 0x92, 0xCA>();
+  constexpr uint32_t kPayloadSize = 500;
+  std::array<std::byte, kPayloadSize> payload_buffer = {std::byte{0}};
+  auto argos_2_ptt_payload =
+      BuildArgos2PTTPayload(kID, kPayload, payload_buffer);
+
+  constexpr auto kExpectedPayload = pw::bytes::Array<
+      // Encoded message length.
+      0x00, 0x00, 0x98,
+      // Message length + ID number (upper 20bit).
+      0x61, 0x23, 0x45,
+      // Id number (lower 8 bit).
+      0x67,
+      // User data.
+      0x9B, 0xFC, 0x3B, 0xD1, 0xD1, 0x3D, 0xDA, 0xDA, 0xCF, 0x60, 0x01, 0x4B,
+      0x5F, 0x92, 0xCA,
+      // Padding bytes to 24bit word.
+      0x00, 0x00>();
+
+  EXPECT_EQ(argos_2_ptt_payload.status(), pw::OkStatus());
+  pw::ConstByteSpan got = argos_2_ptt_payload.value();
+  EXPECT_EQ(got.size(), kExpectedPayload.size());
+  for (size_t i = 0; i < got.size(); ++i) {
+    EXPECT_EQ(got[i], kExpectedPayload[i]) << "i: " << i;
+  }
+}
 }  // namespace tr::artic::internal

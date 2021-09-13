@@ -1,5 +1,7 @@
 #include "internal/burst_mode.h"
 
+#include "pw_bytes/endian.h"
+
 namespace tr::artic::internal {
 pw::Result<pw::ConstByteSpan> BurstMode::Read(size_t size, uint16_t address,
                                               pw::ByteSpan register_buffer) {
@@ -120,6 +122,59 @@ pw::Result<TxModeConfig> ArgosConfiguration::GetTxMode() {
     return read.status();
   }
   return config_register.tx_configuration;
+}
+
+pw::Result<pw::ConstByteSpan> BuildArgos2PTTPayload(uint32_t id_number,
+                                                    pw::ConstByteSpan payload,
+                                                    pw::ByteSpan destination) {
+  static constexpr uint32_t kBitsInAByte = 8;
+  static constexpr uint32_t kPreambleSize = 4;   // bytes
+  static constexpr uint32_t kArticWordSize = 3;  // bytes
+  static constexpr uint32_t kArgosWordSize = 4;  // bytes
+  static constexpr uint32_t kIdSize = 1;
+  static constexpr uint8_t kMaxPayloadArgosWords = 0x08;
+  // TODO(tracka/8): Tighten this constraint, this currently checks for max
+  // size.
+  if (destination.size() <
+      kPreambleSize + kMaxPayloadArgosWords * kArgosWordSize) {
+    return pw::Status::FailedPrecondition();
+  }
+  uint32_t encoded_length_bits =
+      kBitsInAByte * (payload.size() + kPreambleSize);
+  uint32_t message_words =
+      RoundUpIntegerDivision(payload.size(), kArgosWordSize);
+
+  if (message_words > kMaxPayloadArgosWords) {
+    return pw::Status::FailedPrecondition();
+  }
+
+  // A4-SYS-IF-0086-CNES_0107 - SERVICES AND MESSAGE FORMATS sec:4.2.1
+  // n = N - 1
+  uint8_t parity = Parity(message_words - 1);
+  uint8_t encoded_message_length_with_parity =
+      ((message_words - 1U) << 1U) | parity;
+
+  pw::ByteBuilder builder(destination);
+  auto encoded_message_length =
+      pw::bytes::CopyInOrder(std::endian::big, encoded_length_bits);
+  constexpr uint8_t kIDBitSize = 28;
+  uint32_t message_length_and_id =
+      static_cast<uint32_t>(encoded_message_length_with_parity << kIDBitSize) |
+      id_number;
+  builder.append(std::span(encoded_message_length).last(kArticWordSize))
+      .PutUint32(message_length_and_id, std::endian::big)
+      .append(payload);
+  uint32_t number_of_padding_bytes =
+      RoundUpIntegerDivision(builder.size(), kArticWordSize) * kArticWordSize -
+      builder.size();
+  if (number_of_padding_bytes > 0) {
+    builder.append(number_of_padding_bytes, std::byte{0});
+  }
+  if (builder.status() != pw::OkStatus()) {
+    return builder.status();
+  }
+
+  return pw::ConstByteSpan(builder);
 }
 
 }  // namespace tr::artic::internal
