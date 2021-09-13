@@ -72,7 +72,7 @@ class ArticCommandWriter {
 class ArticConfigWriter {
  public:
   ArticConfigWriter(spi::SpiInterface &spi, gpio::GpiInterface &int2)
-      : spi_(spi), interrupt2_(int2), command_writer_(spi, int2) {}
+      : command_writer_(spi, int2) {}
 
   // Sets the receive mode of the radio.
   pw::Status SetRxMode(RxMode mode) {
@@ -88,7 +88,5 @@ class ArticConfigWriter {
 
  private:
   ArticCommandWriter command_writer_;
-  spi::SpiInterface &spi_;
-  gpio::GpiInterface &interrupt2_;
 };
 }  // namespace tr::artic::internal

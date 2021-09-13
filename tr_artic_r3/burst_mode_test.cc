@@ -14,7 +14,6 @@
 namespace tr::artic::internal {
 
 using ::testing::_;
-using ::testing::ElementsAre;
 using ::testing::Return;
 using b = std::byte;
 
@@ -33,7 +32,7 @@ TEST(BurstMode, ArticConfigRead) {
   MockGpi interrupt2;
   EXPECT_CALL(interrupt2, IsHigh()).WillOnce(Return(false));
 
-  std::array<std::byte, 3> argos_config_buffer;
+  std::array<std::byte, 3> argos_config_buffer = {b{0x00}};
   EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
                 .Read<BurstRegisterID::ARGOS_CONFIG>(argos_config_buffer)
                 .status(),
@@ -51,6 +50,7 @@ TEST(BurstMode, RxTimeoutWrite) {
   MockGpi interrupt2;
   EXPECT_CALL(interrupt2, IsHigh()).WillOnce(Return(false));
 
+  // NOLINTNEXTLINE(readability-magic-numbers)
   auto rx_timeout_register = pw::bytes::Array<0x00, 0x00, 0x0A>();
   EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
                 .Write<BurstRegisterID::RX_TIMEOUT>(rx_timeout_register),
@@ -61,7 +61,7 @@ TEST(BurstMode, ReadBufferToSmall) {
   MockSpi spi;
   MockGpi interrupt1;
   MockGpi interrupt2;
-  std::array<std::byte, 2> argos_config_buffer;
+  std::array<std::byte, 2> argos_config_buffer{};
   EXPECT_EQ(BurstMode(spi, interrupt1, interrupt2)
                 .Read<BurstRegisterID::ARGOS_CONFIG>(argos_config_buffer)
                 .status(),
@@ -107,7 +107,9 @@ TEST(BurstMode, ReadFirmwareVersion) {
       version.VersionAsString();
   ASSERT_EQ(version_string_result.status(), pw::OkStatus());
   std::string_view version_string = version_string_result.value();
+  // NOLINTNEXTLINE(hicpp-avoid-c-arrays)
   char expected_version_string[] = "aaaaaaaaaaaaaaaaaaaaaaaa";
+  // NOLINTNEXTLINE(hicpp-no-array-decay)
   ASSERT_THAT(version_string,
               ElementsAreArray(std::string_view(expected_version_string)));
 
@@ -120,6 +122,7 @@ TEST(BurstMode, ReadArgosConfiguration) {
   // ARTIC R3 Datasheet, Section: Read Example - 3.3.1
   // Argos register in RxMode: Argos 3 Rx backup mode.
   // Argos register in TxMode: Argos PTT-A4-VLD.
+  // NOLINTNEXTLINE(readability-magic-numbers)
   auto kArgosConfigRegister = pw::bytes::Array<0x00, 0x00, 0x61>();
 
   MockSpi spi;

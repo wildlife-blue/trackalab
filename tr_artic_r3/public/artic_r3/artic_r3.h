@@ -29,11 +29,7 @@ class ArticR3 {
   constexpr ArticR3(gpio::GpoInterface &reset,
                     gpio::GpoInterface &device_select, gpio::GpiInterface &int1,
                     gpio::GpiInterface &int2, spi::SpiInterface &spi)
-      : reset_(reset),
-        device_select_(device_select),
-        interupt1_(int1),
-        interupt2_(int2),
-        spi_(spi) {}
+      : reset_(reset), interupt1_(int1) {}
 
   void Reset() {
     // Reset line is active low. This resets and releases.
@@ -48,10 +44,7 @@ class ArticR3 {
 
  private:
   gpio::GpoInterface &reset_;
-  gpio::GpoInterface &device_select_;
   gpio::GpiInterface &interupt1_;
-  gpio::GpiInterface &interupt2_;
-  spi::SpiInterface &spi_;
 
   pw::Status PollIdleStateTransitionFor(
       std::chrono::duration<long double, std::milli> duration) {

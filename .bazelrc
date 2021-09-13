@@ -27,3 +27,6 @@ build --@rules_cc_toolchain_config//:clang_tidy_config=@trackalab//:clang_tidy_c
 
 # Configures Java runtime.
 build --javabase=@bazel_tools//tools/jdk:remote_jdk11
+
+# Treat warnings as errors.
+build --features=errors
