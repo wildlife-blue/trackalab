@@ -40,5 +40,6 @@ jobs:
         with:
           files: bazel-out/_coverage/_coverage_report.dat
           flags: unittests # optional
+          fail_ci_if_error: false # optional (default = false)
           verbose: true # optional (default = false)
 
