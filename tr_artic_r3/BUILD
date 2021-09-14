@@ -105,3 +105,26 @@ cc_test(
         "@pigweed//pw_status",
     ],
 )
+
+cc_library(
+    name = "transaction",
+    srcs = [
+        "transaction.cc",
+    ],
+    hdrs = ["public/internal/transaction.h"],
+    includes = ["public"],
+    deps = [
+        ":command_mode",
+        "@pigweed//pw_status",
+    ],
+)
+
+cc_test(
+    name = "transaction_test",
+    srcs = ["transaction_test.cc"],
+    deps = [
+        ":mock_io",
+        ":transaction",
+        "//config:gtest",
+    ],
+)
