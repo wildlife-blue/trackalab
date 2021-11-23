@@ -1,4 +1,4 @@
-try-import user.bazelrc
+#try-import user.bazelrc
 # Required for Bazel's toolchain resolution.
 build --incompatible_enable_cc_toolchain_resolution
 
@@ -23,7 +23,7 @@ build --@rules_cc_toolchain_config//:user_defined=@pigweed//pw_polyfill:toolchai
 
 # Configures static analyser.
 build:analyser --aspects @rules_cc_toolchain//tools/clang_tidy:clang_tidy.bzl%clang_tidy_aspect --output_groups=report 
-build --@rules_cc_toolchain_config//:clang_tidy_config=@trackalab//:clang_tidy_config
+build --@rules_cc_toolchain_config//:clang_tidy_config=:clang_tidy_config
 
 # Configures Java runtime.
 build --javabase=@bazel_tools//tools/jdk:remote_jdk11
