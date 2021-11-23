@@ -1,0 +1,91 @@
+cc_library(
+    name = "crc4",
+    srcs = ["crc4.cc"],
+    hdrs = ["public/internal/crc4.h"],
+    includes = ["public"],
+    deps = [
+        "@pigweed//pw_assert",
+        "@pigweed//pw_span",
+    ],
+)
+
+cc_test(
+    name = "crc4_test",
+    srcs = ["crc4_test.cc"],
+    deps = [
+        ":crc4",
+        "//config:gtest",
+        "@pigweed//pw_checksum",
+    ],
+)
+
+cc_library(
+    name = "conversion",
+    hdrs = ["public/internal/conversion.h"],
+    includes = ["public"],
+    deps = ["@pigweed//pw_preprocessor"],
+)
+
+cc_test(
+    name = "conversion_test",
+    srcs = ["conversion_test.cc"],
+    deps = [
+        ":conversion",
+        "//config:gtest",
+    ],
+)
+
+cc_library(
+    name = "prom",
+    srcs = ["prom.cc"],
+    hdrs = [
+        "public/internal/prom.h",
+        "public/tr_ms5837/ms5837.h",
+    ],
+    includes = ["public"],
+    deps = [
+        ":conversion",
+        ":crc4",
+        "@pigweed//pw_bytes",
+        "@pigweed//pw_i2c:address",
+        "@pigweed//pw_i2c:initiator",
+        "@pigweed//pw_i2c:register_device",
+        "@pigweed//pw_span",
+    ],
+)
+
+cc_test(
+    name = "prom_test",
+    srcs = ["prom_test.cc"],
+    deps = [
+        ":prom",
+        "//config:gtest",
+        "@pigweed//pw_i2c:initiator_gmock",
+        "@pigweed//pw_result",
+    ],
+)
+
+cc_library(
+    name = "tr_ms5837",
+    srcs = ["ms5837.cc"],
+    hdrs = ["public/tr_ms5837/ms5837.h"],
+    includes = ["public"],
+    deps = [
+        ":conversion",
+        ":prom",
+        "@pigweed//pw_bytes",
+        "@pigweed//pw_i2c:address",
+        "@pigweed//pw_i2c:initiator",
+    ],
+)
+
+cc_test(
+    name = "tr_ms5837_test",
+    srcs = ["ms5837_test.cc"],
+    deps = [
+        ":tr_ms5837",
+        "//config:gtest",
+        "@pigweed//pw_i2c:address",
+        "@pigweed//pw_i2c:initiator_gmock",
+    ],
+)

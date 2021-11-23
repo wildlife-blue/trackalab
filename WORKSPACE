@@ -17,12 +17,25 @@ git_repository(
     remote = "https://github.com/silvergasp/platforms.git",
 )
 
+http_archive(
+    name = "io_bazel_stardoc",
+    sha256 = "c9794dcc8026a30ff67cf7cf91ebe245ca294b20b071845d12c192afe243ad72",
+    urls = [
+        "https://mirror.bazel.build/github.com/bazelbuild/stardoc/releases/download/0.5.0/stardoc-0.5.0.tar.gz",
+        "https://github.com/bazelbuild/stardoc/releases/download/0.5.0/stardoc-0.5.0.tar.gz",
+    ],
+)
+
+load("@io_bazel_stardoc//:setup.bzl", "stardoc_repositories")
+
+stardoc_repositories()
+
 # Setup host toolchain.
 # Required by: All.
 # Used in modules: All CC modules.
 git_repository(
     name = "rules_cc_toolchain",
-    commit = "80b51ba81f14eebe06684efa25261f6dc46e9b29",
+    commit = "a4ad06c805fc0b38b29f7572de89b95e943e443d",
     remote = "https://github.com/silvergasp/rules_cc_toolchain.git",
 )
 
@@ -246,7 +259,7 @@ http_archive(
 # Required by: tracka.
 # Used in modules: config, spi, gpio, artic_r3.
 git_repository(
-    name = "gtest",
-    commit = "a3460d1aeeaa43fdf137a6adefef10ba0b59fe4b",
+    name = "com_google_googletest",
+    commit = "9614d8c1d69dee9de2e0771a0da2b69a34964e33",
     remote = "https://github.com/google/googletest.git",
 )

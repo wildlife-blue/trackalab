@@ -1,3 +1,3 @@
-Checks:          'clang-diagnostic-*,clang-analyzer-*,google-*,performance-*,readability-*,portability-*,hicpp-*,misc-*'
+Checks:          'clang-diagnostic-*,clang-analyzer-*,google-*,performance-*,portability-*,hicpp-*,misc-*'
 WarningsAsErrors: '*'
 FormatStyle:    Google 
