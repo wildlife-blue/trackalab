@@ -5,7 +5,7 @@ package(default_visibility = ["//visibility:public"])
 cc_library(
     name = "gtest_multiplexer",
     deps = select({
-        "@platforms//os:linux": ["@gtest//:gtest_main"],
+        "@platforms//os:linux": ["@com_google_googletest//:gtest_main"],
         "//conditions:default": ["@pigweed//pw_unit_test"],
     }),
 )
